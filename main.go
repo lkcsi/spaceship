@@ -9,11 +9,16 @@ import (
 
 var player *game.Ship
 
+const (
+	width  = 300
+	height = 300
+)
+
 type Game struct {
 }
 
 func init() {
-	player = game.NewShip(160, 120)
+	player = game.NewShip(width/2, height/2)
 }
 
 func (g *Game) Update() error {
@@ -27,14 +32,14 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return 320, 240
+	return width, height
 }
 
 func main() {
 	log.Print("Started")
 
-	ebiten.SetWindowSize(640, 480)
-	ebiten.SetWindowTitle("Hello, World!")
+	ebiten.SetWindowSize(600, 600)
+	ebiten.SetWindowTitle("Spaceship!")
 	if err := ebiten.RunGame(&Game{}); err != nil {
 		log.Fatal(err)
 	}

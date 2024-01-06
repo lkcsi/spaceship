@@ -6,12 +6,11 @@ import (
 )
 
 const (
-	MaxVel           = 3
-	Accel            = 0.1
-	Decel            = 0.01
-	Fall             = 0.02
-	SteeringAccel    = 2.0
-	SteeringTrashold = 0.1
+	MaxVel        = 3
+	Accel         = 0.1
+	Decel         = 0.01
+	Fall          = 0.02
+	SteeringAccel = 2.0
 )
 
 type Ship struct {
@@ -47,11 +46,7 @@ func (ship *Ship) accel() {
 func (ship *Ship) steer(dir int) {
 	ship.Angle += float64(dir * SteeringAccel)
 
-	if ship.Angle < 0 {
-		ship.Angle = 360 + ship.Angle
-	} else if ship.Angle > 360 {
-		ship.Angle = float64(rune(ship.Angle) % 360)
-	}
+	ship.Angle = float64(rune(ship.Angle) % 360)
 }
 
 func (ship *Ship) decel() {
