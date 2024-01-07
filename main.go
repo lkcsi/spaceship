@@ -7,7 +7,8 @@ import (
 	"github.com/lkcsi/spaceship/game"
 )
 
-var player *game.Ship
+var ship *game.Ship
+var world *game.World
 
 const (
 	width  = 300
@@ -18,17 +19,20 @@ type Game struct {
 }
 
 func init() {
-	player = game.NewShip(width/2, height/2)
+	ship = game.NewShip(width/2, height/2)
+	world = game.NewWorld()
+	world.Add(ship)
 }
 
 func (g *Game) Update() error {
 	var inputs = game.GetDirection()
-	player.UpdateShip(inputs)
+	ship.UpdateShip(inputs)
+	world.Update()
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	game.DrawShip(screen, player)
+	game.DrawShip(screen, ship)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {

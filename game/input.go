@@ -7,9 +7,9 @@ import (
 
 const (
 	Throttle = iota
-	Down
 	Left
 	Right
+	Stabilize
 	Idle
 )
 
@@ -18,14 +18,14 @@ func GetDirection() []int {
 	if inpututil.KeyPressDuration(ebiten.KeyArrowUp) > 0 {
 		dirs = append(dirs, Throttle)
 	}
-	if inpututil.KeyPressDuration(ebiten.KeyArrowDown) > 0 {
-		dirs = append(dirs, Down)
-	}
 	if inpututil.KeyPressDuration(ebiten.KeyArrowRight) > 0 {
 		dirs = append(dirs, Right)
 	}
 	if inpututil.KeyPressDuration(ebiten.KeyArrowLeft) > 0 {
 		dirs = append(dirs, Left)
+	}
+	if inpututil.KeyPressDuration(ebiten.KeySpace) > 0 {
+		dirs = append(dirs, Stabilize)
 	}
 	return dirs
 }

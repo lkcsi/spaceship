@@ -3,7 +3,6 @@ package game
 import (
 	"image/color"
 	"math"
-	"slices"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -31,8 +30,7 @@ func translateImage(ship *Ship, x, y float64) *ebiten.DrawImageOptions {
 func DrawShip(screen *ebiten.Image, ship *Ship) {
 	screen.DrawImage(shipImage, translateImage(ship, -5, -10))
 
-	var inputs = GetDirection()
-	if slices.Contains(inputs, Throttle) {
+	if ship.Action == Throttle {
 		screen.DrawImage(throttleImage, translateImage(ship, -2.5, -15))
 	}
 
