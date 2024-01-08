@@ -6,6 +6,6 @@ type Paddle struct {
 	Height int
 }
 
-func (paddle *Paddle) NewPaddle(pos Vector, width, height int) *Paddle {
-	return &Paddle{pos, width, height}
+func NewPaddle(x, y float64, width, height int) *Paddle {
+	return &Paddle{Vector{x, y}, width, height}
 }
