@@ -13,19 +13,19 @@ const (
 	Idle
 )
 
-func GetDirection() []int {
+func GetDirection(up, right, left ebiten.Key) []int {
 	var dirs []int
-	if inpututil.KeyPressDuration(ebiten.KeyArrowUp) > 0 {
+	if inpututil.KeyPressDuration(up) > 0 {
 		dirs = append(dirs, Throttle)
 	}
-	if inpututil.KeyPressDuration(ebiten.KeyArrowRight) > 0 {
+	if inpututil.KeyPressDuration(right) > 0 {
 		dirs = append(dirs, Right)
 	}
-	if inpututil.KeyPressDuration(ebiten.KeyArrowLeft) > 0 {
+	if inpututil.KeyPressDuration(left) > 0 {
 		dirs = append(dirs, Left)
 	}
-	if inpututil.KeyPressDuration(ebiten.KeySpace) > 0 {
-		dirs = append(dirs, Stabilize)
-	}
+	//if inpututil.KeyPressDuration(ebiten.KeySpace) > 0 {
+	//	dirs = append(dirs, Stabilize)
+	//}
 	return dirs
 }

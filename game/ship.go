@@ -1,6 +1,7 @@
 package game
 
 import (
+	"image/color"
 	"slices"
 )
 
@@ -11,6 +12,8 @@ type Ship struct {
 	Accel    bool
 	Width    int
 	Height   int
+	Color    color.RGBA
+	Alive    bool
 }
 
 type Steer int
@@ -18,8 +21,8 @@ type Steer int
 const (
 	MaxVel              = 3
 	Accel               = 0.1
-	Decel               = 0.01
-	Fall                = 0.02
+	Decel               = 0.0
+	Fall                = 0
 	SteeringAccel       = 4.0
 	steerLeft     Steer = 1
 	steerRight    Steer = -1
@@ -79,14 +82,46 @@ func (ship *Ship) move() {
 	ship.Pos.Add(ship.movement)
 }
 
-func NewShip(x, y float64, width, height int) *Ship {
+func (ship *Ship) Front() *Vector {
+	return ship.body(ship.Angle, float64(ship.Height/2))
+}
+
+func (ship *Ship) Rear() *Vector {
+	return ship.body(ship.Angle, float64(ship.Height/-2))
+}
+
+func (ship *Ship) Left() *Vector {
+	angle := rune(ship.Angle+90) % 360
+	return ship.body(float64(angle), float64(ship.Width/2))
+}
+
+func (ship *Ship) Right() *Vector {
+	angle := rune(ship.Angle+90) % 360
+	return ship.body(float64(angle), float64(ship.Width/-2))
+}
+
+func (ship *Ship) body(angle, magnitude float64) *Vector {
+	result := ship.Pos
+	moveVector := &Vector{magnitude, magnitude}
+	moveVector.Rotate(angle)
+	result.Add(*moveVector)
+	return &result
+}
+
+func (ship *Ship) destroy() {
+	ship.Alive = false
+}
+
+func NewShip(x, y float64, width, height int, color color.RGBA) *Ship {
 	var ship = Ship{}
 	ship.movement = Vector{0, 0}
 	ship.Pos = Vector{x, y}
 	ship.Angle = 180
 	ship.Accel = false
+	ship.Alive = true
 	ship.Height = height
 	ship.Width = width
+	ship.Color = color
 
 	return &ship
 }

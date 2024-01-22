@@ -8,49 +8,40 @@ import (
 )
 
 type Display struct {
-	ships   []ShipImage
-	paddles []PaddleImage
+	ships []ShipImage
 }
 
 type ShipImage struct {
-	image    *ebiten.Image
-	throttle *ebiten.Image
 	ship     *Ship
-}
-
-type PaddleImage struct {
-	image  *ebiten.Image
-	paddle *Paddle
+	body     *ebiten.Image
+	throttle *ebiten.Image
 }
 
 func NewDisplay() *Display {
 	return &Display{}
 }
 
-func (d *Display) AddPaddle(paddle *Paddle) {
-	im := ebiten.NewImage(paddle.Width, paddle.Height)
-	im.Fill(color.RGBA{255, 255, 255, 0})
-
-	d.paddles = append(d.paddles, PaddleImage{im, paddle})
-}
-
 func (d *Display) AddShip(ship *Ship) {
 	im := ebiten.NewImage(ship.Width, ship.Height)
-	im.Fill(color.RGBA{255, 0, 0, 0})
+	im.Fill(ship.Color)
 
-	th := ebiten.NewImage(ship.Width/2, ship.Width/2)
-	th.Fill(color.RGBA{255, 255, 0, 0})
+	th_img := ebiten.NewImage(ship.Width/2, ship.Width/2)
+	th_img.Fill(color.RGBA{255, 255, 0, 0})
 
-	d.ships = append(d.ships, ShipImage{im, th, ship})
+	d.ships = append(d.ships, ShipImage{ship, im, th_img})
 }
 
-func drawPaddle(screen *ebiten.Image, paddleImage *PaddleImage) {
-	p := paddleImage.paddle
-	im := paddleImage.image
-
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(p.Pos.X), float64(p.Pos.Y))
-	screen.DrawImage(im, op)
+func (d *Display) RemoveShip(rship *Ship) {
+	index := -1
+	for idx, ship := range d.ships {
+		if ship.ship == rship {
+			index = idx
+			break
+		}
+	}
+	if index != -1 {
+		d.ships = append(d.ships[:index], d.ships[index+1:]...)
+	}
 }
 
 func drawShip(screen *ebiten.Image, shipImage *ShipImage) {
@@ -60,22 +51,21 @@ func drawShip(screen *ebiten.Image, shipImage *ShipImage) {
 	op.GeoM.Rotate((360 - ship.Angle) * math.Pi / 180)
 	op.GeoM.Translate(ship.Pos.X, ship.Pos.Y)
 
-	screen.DrawImage(shipImage.image, op)
+	screen.DrawImage(shipImage.body, op)
 
-	width, heigth := ship.Width/2, ship.Width/2
-	var op2 = &ebiten.DrawImageOptions{}
-	op2.GeoM.Translate(float64(width/-2), float64(ship.Height/-2-heigth))
-	op2.GeoM.Rotate((360 - ship.Angle) * math.Pi / 180)
-	op2.GeoM.Translate(ship.Pos.X, ship.Pos.Y)
-	screen.DrawImage(shipImage.throttle, op2)
+	if ship.Accel {
+		width, heigth := ship.Width/2, ship.Width/2
+		var op2 = &ebiten.DrawImageOptions{}
+		op2.GeoM.Translate(float64(width/-2), float64(ship.Height/-2-heigth))
+		op2.GeoM.Rotate((360 - ship.Angle) * math.Pi / 180)
+		op2.GeoM.Translate(ship.Pos.X, ship.Pos.Y)
+		screen.DrawImage(shipImage.throttle, op2)
+	}
 
 }
 
 func (d *Display) Draw(screen *ebiten.Image) {
 	for _, s := range d.ships {
 		drawShip(screen, &s)
-	}
-	for _, p := range d.paddles {
-		drawPaddle(screen, &p)
 	}
 }

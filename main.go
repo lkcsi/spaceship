@@ -1,13 +1,15 @@
 package main
 
 import (
+	"image/color"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/lkcsi/spaceship/game"
 )
 
-var ship *game.Ship
+var ship_1 *game.Ship
+var ship_2 *game.Ship
 var world *game.World
 var display *game.Display
 
@@ -20,18 +22,30 @@ type Game struct {
 }
 
 func init() {
-	ship = game.NewShip(width/2, height/2, 10, 20)
-	world = game.NewWorld()
-	world.Add(ship)
+	ship_1 = game.NewShip(width/4, height/2, 10, 20, color.RGBA{255, 0, 0, 0})
+	ship_2 = game.NewShip(width/4*3, height/2, 10, 20, color.RGBA{0, 255, 0, 0})
+
+	world = game.NewWorld(width, height)
+	world.Add(ship_1)
+	world.Add(ship_2)
 	display = &game.Display{}
-	display.AddShip(ship)
-	display.AddPaddle(game.NewPaddle(0, height/1.5, width, 10))
+	display.AddShip(ship_1)
+	display.AddShip(ship_2)
 }
 
 func (g *Game) Update() error {
-	var inputs = game.GetDirection()
-	ship.UpdateShip(inputs)
+	if ship_1.Alive {
+		var inputs = game.GetDirection(ebiten.KeyW, ebiten.KeyD, ebiten.KeyA)
+		ship_1.UpdateShip(inputs)
+	}
+
+	if ship_2.Alive {
+		var inputs = game.GetDirection(ebiten.KeyArrowUp, ebiten.KeyArrowRight, ebiten.KeyArrowLeft)
+		ship_2.UpdateShip(inputs)
+	}
+
 	world.Update()
+
 	return nil
 }
 
