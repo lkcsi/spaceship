@@ -9,11 +9,11 @@ const (
 	Throttle = iota
 	Left
 	Right
-	Stabilize
+	Shoot
 	Idle
 )
 
-func GetDirection(up, right, left ebiten.Key) []int {
+func GetDirection(up, right, left, stabilize ebiten.Key) []int {
 	var dirs []int
 	if inpututil.KeyPressDuration(up) > 0 {
 		dirs = append(dirs, Throttle)
@@ -24,8 +24,8 @@ func GetDirection(up, right, left ebiten.Key) []int {
 	if inpututil.KeyPressDuration(left) > 0 {
 		dirs = append(dirs, Left)
 	}
-	//if inpututil.KeyPressDuration(ebiten.KeySpace) > 0 {
-	//	dirs = append(dirs, Stabilize)
-	//}
+	if inpututil.IsKeyJustPressed(stabilize) {
+		dirs = append(dirs, Shoot)
+	}
 	return dirs
 }
