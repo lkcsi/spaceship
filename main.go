@@ -19,12 +19,13 @@ type Game struct {
 }
 
 func init() {
-	ship_1 = game.NewShip(width/4, height/2, 10, 20)
+	ship_1 = game.NewShip(width/2, height/2, 10, 20)
 	display = game.NewDisplay(ship_1)
 }
 
 func (g *Game) Update() error {
-	var inputs = game.GetDirection(ebiten.KeyW, ebiten.KeyD, ebiten.KeyA, ebiten.KeyControlLeft)
+	var inputs = game.GetDirection(ebiten.KeyS, ebiten.KeyE, ebiten.KeyQ,
+		ebiten.KeyD, ebiten.KeyA, ebiten.KeySpace)
 	ship_1.UpdateShip(inputs)
 
 	return nil

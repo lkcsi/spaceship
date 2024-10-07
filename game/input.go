@@ -7,25 +7,26 @@ import (
 
 const (
 	Throttle = iota
-	Left
-	Right
+	FrontLeft
+	FrontRight
 	Shoot
+	Stabilize
 	Idle
 )
 
-func GetDirection(up, right, left, stabilize ebiten.Key) []int {
+func GetDirection(throttle, fr, fl, rr, rl, stabilize ebiten.Key) []int {
 	var dirs []int
-	if inpututil.KeyPressDuration(up) > 0 {
+	if inpututil.KeyPressDuration(throttle) > 0 {
 		dirs = append(dirs, Throttle)
 	}
-	if inpututil.KeyPressDuration(right) > 0 {
-		dirs = append(dirs, Right)
+	if inpututil.KeyPressDuration(fr) > 0 {
+		dirs = append(dirs, FrontRight)
 	}
-	if inpututil.KeyPressDuration(left) > 0 {
-		dirs = append(dirs, Left)
+	if inpututil.KeyPressDuration(fl) > 0 {
+		dirs = append(dirs, FrontLeft)
 	}
 	if inpututil.IsKeyJustPressed(stabilize) {
-		dirs = append(dirs, Shoot)
+		dirs = append(dirs, Stabilize)
 	}
 	return dirs
 }

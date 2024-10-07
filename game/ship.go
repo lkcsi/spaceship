@@ -5,36 +5,52 @@ import (
 )
 
 type Ship struct {
-	Pos      Vector
-	movement Vector
-	Angle    float64
-	Accel    bool
-	Width    int
-	Height   int
+	Pos       Vector
+	movement  Vector
+	rotation  float64
+	Angle     float64
+	Accel     bool
+	FrontLeft bool
+	FrontRigt bool
+	RearLeft  bool
+	RearRight bool
+	Width     int
+	Height    int
 }
 
 type Steer int
 
 const (
 	accel               = 0.1
-	decel               = 0.01
-	steeringAccel       = 4.0
+	decel               = 0.00
+	steeringAccel       = 0.1
 	steerLeft     Steer = 1
 	steerRight    Steer = -1
 )
 
 func (ship *Ship) UpdateShip(inputs []int) {
 	ship.Accel = false
+	ship.FrontLeft = false
+	ship.FrontRigt = false
+	ship.RearLeft = false
+	ship.RearRight = false
+
 	ship.decel()
+
+	ship.Angle = float64(rune(ship.Angle) % 360)
 
 	if slices.Contains(inputs, Throttle) {
 		ship.accel()
 	}
-	if slices.Contains(inputs, Left) {
-		ship.steer(steerLeft)
-	} else if slices.Contains(inputs, Right) {
-		ship.steer(steerRight)
+	if slices.Contains(inputs, FrontLeft) {
+		ship.rotate(steerLeft)
+	} else if slices.Contains(inputs, FrontRight) {
+		ship.rotate(steerRight)
 	}
+	if slices.Contains(inputs, Stabilize) {
+		ship.stabilize()
+	}
+
 	ship.move()
 }
 
@@ -48,20 +64,23 @@ func (ship *Ship) accel() {
 
 func (ship *Ship) stabilize() {
 	ship.movement = Vector{0, 0}
+	ship.rotation = 0
 }
 
-func (ship *Ship) steer(steer Steer) {
-	ship.Angle += float64(steer) * steeringAccel
-	ship.Angle = float64(rune(ship.Angle) % 360)
+func (ship *Ship) rotate(steer Steer) {
+	ship.rotation += float64(steer) * steeringAccel
 }
 
 func (ship *Ship) decel() {
 	ship.Accel = false
 	ship.movement.X -= decel * ship.movement.X
 	ship.movement.Y -= decel * ship.movement.Y
+
+	ship.rotation -= decel * ship.rotation
 }
 
 func (ship *Ship) move() {
+	ship.Angle += ship.rotation
 	ship.Pos.Add(ship.movement)
 }
 
@@ -95,7 +114,7 @@ func NewShip(x, y float64, width, height int) *Ship {
 	var ship = Ship{}
 	ship.movement = Vector{0, 0}
 	ship.Pos = Vector{x, y}
-	ship.Angle = 180
+	ship.Angle = 0
 	ship.Accel = false
 	ship.Height = height
 	ship.Width = width
