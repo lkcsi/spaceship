@@ -30,23 +30,50 @@ func (d *Display) DrawShip(screen *ebiten.Image) {
 
 	d.drawShip(screen)
 
-	d.drawThrottle2(screen)
-
+	if d.ship.FrontLeft {
+		d.drawFrontLeft(screen)
+	}
+	if d.ship.FrontRight {
+		d.drawFrontRight(screen)
+	}
+	if d.ship.RearRight {
+		d.drawRearRight(screen)
+	}
+	if d.ship.RearLeft {
+		d.drawRearLeft(screen)
+	}
 	if d.ship.Accel {
 		d.drawThrottle(screen)
 	}
 }
 
 func (d *Display) drawThrottle(screen *ebiten.Image) {
-	var op = &ebiten.DrawImageOptions{}
-	x, y := d.ship.Width/-4, -1*d.ship.Height/2-d.thHeight
-	op.GeoM.Translate(float64(x), float64(y))
-	d.drawRect(screen, d.throttleIm, op)
+	x, y := -1*d.ship.Width/4, -1*d.ship.Height/2-d.thHeight
+	d.drawBurn(screen, x, y)
 }
 
-func (d *Display) drawThrottle2(screen *ebiten.Image) {
+func (d *Display) drawFrontRight(screen *ebiten.Image) {
+	x, y := -1*d.ship.Width/2-d.thWidth, d.ship.Height/2-d.thHeight
+	d.drawBurn(screen, x, y)
+}
+
+func (d *Display) drawFrontLeft(screen *ebiten.Image) {
+	x, y := d.ship.Width/2, d.ship.Height/2-d.thHeight
+	d.drawBurn(screen, x, y)
+}
+
+func (d *Display) drawRearRight(screen *ebiten.Image) {
+	x, y := -1*d.ship.Width/2-d.thWidth, -1*d.ship.Height/2
+	d.drawBurn(screen, x, y)
+}
+
+func (d *Display) drawRearLeft(screen *ebiten.Image) {
+	x, y := d.ship.Width/2, -1*d.ship.Height/2
+	d.drawBurn(screen, x, y)
+}
+
+func (d *Display) drawBurn(screen *ebiten.Image, x, y int) {
 	var op = &ebiten.DrawImageOptions{}
-	x, y := d.ship.Width/2, d.ship.Width/2
 	op.GeoM.Translate(float64(x), float64(y))
 	d.drawRect(screen, d.throttleIm, op)
 }

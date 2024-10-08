@@ -5,83 +5,53 @@ import (
 )
 
 type Ship struct {
-	Pos       Vector
-	movement  Vector
-	rotation  float64
-	Angle     float64
-	Accel     bool
-	FrontLeft bool
-	FrontRigt bool
-	RearLeft  bool
-	RearRight bool
-	Width     int
-	Height    int
+	Pos        Vector
+	Movement   Vector
+	Rotation   float64
+	Angle      float64
+	Accel      bool
+	FrontLeft  bool
+	FrontRight bool
+	RearLeft   bool
+	RearRight  bool
+	Stabilize  bool
+	Width      int
+	Height     int
 }
 
-type Steer int
-
-const (
-	accel               = 0.1
-	decel               = 0.00
-	steeringAccel       = 0.1
-	steerLeft     Steer = 1
-	steerRight    Steer = -1
-)
+type Dir int
 
 func (ship *Ship) UpdateShip(inputs []int) {
 	ship.Accel = false
 	ship.FrontLeft = false
-	ship.FrontRigt = false
+	ship.FrontRight = false
 	ship.RearLeft = false
 	ship.RearRight = false
+	ship.Stabilize = false
 
-	ship.decel()
+	// ship.decel()
 
-	ship.Angle = float64(rune(ship.Angle) % 360)
+	// ship.Angle = float64(rune(ship.Angle) % 360)
 
+	if slices.Contains(inputs, Stabilize) {
+		ship.Stabilize = true
+		return
+	}
 	if slices.Contains(inputs, Throttle) {
-		ship.accel()
+		ship.Accel = true
 	}
 	if slices.Contains(inputs, FrontLeft) {
-		ship.rotate(steerLeft)
-	} else if slices.Contains(inputs, FrontRight) {
-		ship.rotate(steerRight)
+		ship.FrontLeft = true
 	}
-	if slices.Contains(inputs, Stabilize) {
-		ship.stabilize()
+	if slices.Contains(inputs, FrontRight) {
+		ship.FrontRight = true
 	}
-
-	ship.move()
-}
-
-func (ship *Ship) accel() {
-	ship.Accel = true
-	moveVector := Vector{accel, accel}
-	moveVector.Rotate(ship.Angle)
-
-	ship.movement.Add(moveVector)
-}
-
-func (ship *Ship) stabilize() {
-	ship.movement = Vector{0, 0}
-	ship.rotation = 0
-}
-
-func (ship *Ship) rotate(steer Steer) {
-	ship.rotation += float64(steer) * steeringAccel
-}
-
-func (ship *Ship) decel() {
-	ship.Accel = false
-	ship.movement.X -= decel * ship.movement.X
-	ship.movement.Y -= decel * ship.movement.Y
-
-	ship.rotation -= decel * ship.rotation
-}
-
-func (ship *Ship) move() {
-	ship.Angle += ship.rotation
-	ship.Pos.Add(ship.movement)
+	if slices.Contains(inputs, RearLeft) {
+		ship.RearLeft = true
+	}
+	if slices.Contains(inputs, RearRight) {
+		ship.RearRight = true
+	}
 }
 
 func (ship *Ship) Front() *Vector {
@@ -112,10 +82,11 @@ func (ship *Ship) body(angle, magnitude float64) *Vector {
 
 func NewShip(x, y float64, width, height int) *Ship {
 	var ship = Ship{}
-	ship.movement = Vector{0, 0}
-	ship.Pos = Vector{x, y}
-	ship.Angle = 0
+	ship.Movement = Vector{0, 0}
 	ship.Accel = false
+	ship.Rotation = 0
+	ship.Pos = Vector{x, y}
+	ship.Angle = 180
 	ship.Height = height
 	ship.Width = width
 

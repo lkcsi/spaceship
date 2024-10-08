@@ -7,8 +7,9 @@ import (
 	"github.com/lkcsi/spaceship/game"
 )
 
-var ship_1 *game.Ship
+var ship *game.Ship
 var display *game.Display
+var physics game.Physics
 
 const (
 	width  = 500
@@ -19,14 +20,16 @@ type Game struct {
 }
 
 func init() {
-	ship_1 = game.NewShip(width/2, height/2, 10, 20)
-	display = game.NewDisplay(ship_1)
+	ship = game.NewShip(width/2, height/2, 10, 20)
+	display = game.NewDisplay(ship)
+	physics = game.NewSpacePhysics()
 }
 
 func (g *Game) Update() error {
 	var inputs = game.GetDirection(ebiten.KeyS, ebiten.KeyE, ebiten.KeyQ,
 		ebiten.KeyD, ebiten.KeyA, ebiten.KeySpace)
-	ship_1.UpdateShip(inputs)
+	ship.UpdateShip(inputs)
+	physics.UpdateShip(ship)
 
 	return nil
 }
